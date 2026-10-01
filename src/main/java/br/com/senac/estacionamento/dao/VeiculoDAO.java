@@ -3,6 +3,7 @@ package br.com.senac.estacionamento.dao;
 import br.com.senac.estacionamento.connection.Conexao;
 import br.com.senac.estacionamento.model.Veiculo;
 
+import java.beans.JavaBean;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,8 +26,7 @@ public class VeiculoDAO {
 
         try (
                 Connection conexao = Conexao.conectar();
-                PreparedStatement comando = conexao.prepareStatement(sql)
-        ) {
+                PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             // OBJETO JAVA -> SQL
             comando.setString(1, veiculo.getPlaca());
@@ -39,14 +39,12 @@ public class VeiculoDAO {
             int linhas = comando.executeUpdate();
 
             System.out.println(
-                    "Veículo inserido com sucesso! Linhas: " + linhas
-            );
+                    "Veículo inserido com sucesso! Linhas: " + linhas);
 
         } catch (SQLException erro) {
 
             System.out.println(
-                    "Erro ao inserir veículo: " + erro.getMessage()
-            );
+                    "Erro ao inserir veículo: " + erro.getMessage());
         }
     }
 
@@ -61,8 +59,7 @@ public class VeiculoDAO {
         try (
                 Connection conexao = Conexao.conectar();
                 PreparedStatement comando = conexao.prepareStatement(sql);
-                ResultSet resultado = comando.executeQuery()
-        ) {
+                ResultSet resultado = comando.executeQuery()) {
 
             // Percorre os registros retornados pelo MySQL
             while (resultado.next()) {
@@ -82,8 +79,7 @@ public class VeiculoDAO {
                                 + " | Valor/hora: R$ " + valorHora
                                 + " | Horas: " + horasEstacionado
                                 + " | Estacionado: " + estacionado
-                                + " | Tipo: " + tipo
-                );
+                                + " | Tipo: " + tipo);
             }
 
         } catch (SQLException erro) {
@@ -92,54 +88,71 @@ public class VeiculoDAO {
     }
 
     public boolean atualizarValorHora(
+
         String placa,
-        double novoValor){
+        double novoValor) {
 
         String sql = """
-                        UPDATE veiculo
-                        SET valor_hora = ?
-                        WHERE placa ?
-                        """;
-        
+
+                UPDATE veiculo
+                SET valor_hora = ?
+                WHERE placa = ?
+                """;
+
         try (
                 Connection conexao = Conexao.conectar();
-                PreparedStatement comando = conexao.prepareStatement(sql)
-        ){
-                comando.setDouble(1, novoValor);
-                comando.setString(2, placa);
+                PreparedStatement comando = conexao.prepareStatement(sql)) {
 
-                int linhas = comando.executeUpdate();
+            // Substitui os ? do SQL, na ordem
+            comando.setDouble(1, novoValor);
+            comando.setString(2, placa);
 
-                return linhas > 0;
+            // Executa o UPDATE
+            int linhasAfetadas = comando.executeUpdate();
 
-        } catch(SQLException erro){
-                System.out.println("Erro ao atualizar: " + erro.getMessage());
-                return false;
-        }
-
-    }
-
-    public boolean excluir(String placa) {
-
-        String sql = """
-            DELETE FROM veiculo
-            WHERE placa = ?
-            """;
-
-        try (
-            Connection conexao = Conexao.conectar();
-
-            PreparedStatement comando = conexao.prepareStatement(sql)
-        ) {
-
-            comando.setString(1, placa);
-            int linhas = comando.executeUpdate();
-            return linhas > 0;
+            // Se alterou pelo menos uma linha, retorna true
+            return linhasAfetadas > 0;
 
         } catch (SQLException erro) {
-            System.out.println("Erro ao excluir: " + erro.getMessage());
+            System.out.println("Erro ao atualizar valor/hora: " + erro.getMessage());
+
             return false;
         }
+
     }
+
+    public boolean excluir (String placa) {
+
+        String sql = """
+                
+                DELETE FROM veiculo
+                WHERE placa = ?
+                """;
+        // o que falta?
+        try (
+                Connection conexao = Conexao.conectar();
+                PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            // Substitui os ? do SQL, na ordem
+    
+            comando.setString(1, placa);
+
+            // Executa o UPDATE
+            int linhasAfetadas = comando.executeUpdate();
+
+            // Se alterou pelo menos uma linha, retorna true
+            return linhasAfetadas > 0;
+
+        } catch (SQLException erro) {
+            System.out.println("Erro ao excluir placa: " + erro.getMessage());
+
+            return false;
+        }
+
+    }
+
+    
+                        
+                        
 
 }

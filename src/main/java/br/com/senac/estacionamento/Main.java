@@ -63,6 +63,9 @@ public class Main {
 
         veiculoDAO.listar();
 
+
+        veiculoDAO.inserir(carro);
+
         // ==================================================
         // 6. UPDATE
         // JAVA -> DAO -> MYSQL
@@ -84,6 +87,7 @@ public class Main {
         System.out.println("\n--- CONSULTANDO APÓS UPDATE ---");
 
         veiculoDAO.listar();
+        veiculoDAO.excluir("CBC1D23");
 
         // ==================================================
         // 8. FINALIZAÇÃO
